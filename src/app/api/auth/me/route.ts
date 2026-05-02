@@ -5,7 +5,7 @@ import { publicUser } from "@/lib/mock-data";
 
 export async function GET() {
   await seedIfNeeded();
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const userId = cookieStore.get("ethara_task_manager_session")?.value;
 
   if (!userId) {
