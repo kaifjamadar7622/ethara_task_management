@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { getUserById, inviteMember, seedIfNeeded } from "@/lib/store";
 
 async function getActor() {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const userId = cookieStore.get("ethara_task_manager_session")?.value;
   if (!userId) return null;
   return getUserById(userId);
