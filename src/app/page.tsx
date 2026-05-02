@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, useTransition, type FormEvent } from "react";
+import { useEffect, useMemo, useRef, useState, useTransition, type FormEvent } from "react";
 import type {
   DashboardPayload,
   Priority,
@@ -51,7 +51,7 @@ function formatRelativeTime(value: string) {
   return `${Math.round(hours / 24)}d ago`;
 }
 
-function publicName(user?: User) {
+function publicName(user?: { name?: string } | null) {
   return user?.name ?? "Unassigned";
 }
 
@@ -100,6 +100,11 @@ function AccentPill({ label, color }: { label: string; color: string }) {
 }
 
 export default function Home() {
+  const overviewRef = useRef<HTMLElement | null>(null);
+  const projectsRef = useRef<HTMLDivElement | null>(null);
+  const tasksRef = useRef<HTMLElement | null>(null);
+  const teamRef = useRef<HTMLElement | null>(null);
+
   const [session, setSession] = useState<User | null>(null);
   const [dashboard, setDashboard] = useState<DashboardPayload | null>(null);
   const [loading, setLoading] = useState(true);
@@ -136,6 +141,21 @@ export default function Home() {
   });
   const [notice, setNotice] = useState("");
   const [, startTransition] = useTransition();
+
+  function handleSectionSelect(tab: (typeof sectionTabs)[number]) {
+    setActiveSection(tab);
+
+    const target =
+      tab === "Overview"
+        ? overviewRef.current
+        : tab === "Projects"
+          ? projectsRef.current
+          : tab === "Tasks"
+            ? tasksRef.current
+            : teamRef.current;
+
+    target?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
 
   async function refreshDashboard() {
     const response = await fetch("/api/dashboard", { cache: "no-store" });
@@ -524,6 +544,8 @@ export default function Home() {
     );
   }
 
+  if (!dashboard) return null;
+
   return (
     <main className="relative min-h-screen overflow-hidden bg-[#07111f] text-slate-50">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(34,211,238,0.18),transparent_28%),radial-gradient(circle_at_top_right,rgba(59,130,246,0.14),transparent_26%),linear-gradient(180deg,#091423_0%,#07111f_62%,#050b14_100%)]" />
@@ -543,7 +565,7 @@ export default function Home() {
               <button
                 key={tab}
                 type="button"
-                onClick={() => setActiveSection(tab)}
+                onClick={() => handleSectionSelect(tab)}
                 className={`rounded-full px-4 py-2 transition ${
                   activeSection === tab
                     ? "bg-cyan-400 text-slate-950"
@@ -578,7 +600,13 @@ export default function Home() {
           </div>
         </header>
 
-        <section className="mt-8 grid gap-6 xl:grid-cols-[1.25fr_0.75fr]">
+        <section
+          ref={overviewRef}
+          id="overview-section"
+          className={`mt-8 grid gap-6 xl:grid-cols-[1.25fr_0.75fr] ${
+            activeSection === "Overview" ? "scroll-mt-28" : "scroll-mt-28"
+          }`}
+        >
           <div className="rounded-[2rem] border border-white/10 bg-white/[0.06] p-8 shadow-[0_30px_80px_rgba(15,23,42,0.45)] backdrop-blur-xl sm:p-10">
             <div className="flex flex-wrap items-center gap-3">
               <AccentPill
@@ -665,9 +693,17 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="mt-6 grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
-          <div className="space-y-6">
-            <div className="rounded-[2rem] border border-white/10 bg-white/[0.06] p-6 backdrop-blur-xl">
+        <section
+          ref={tasksRef}
+          id="tasks-section"
+          className="mt-6 grid gap-6 xl:grid-cols-[1.2fr_0.8fr] scroll-mt-28"
+        >
+            <div className="space-y-6">
+            <div
+              ref={projectsRef}
+              id="projects-section"
+              className="rounded-[2rem] border border-white/10 bg-white/[0.06] p-6 backdrop-blur-xl scroll-mt-28"
+            >
               <div className="flex flex-wrap items-center justify-between gap-4">
                 <div>
                   <p className="text-[11px] uppercase tracking-[0.35em] text-cyan-200/70">
@@ -807,7 +843,7 @@ export default function Home() {
             </div>
           </div>
 
-          <aside className="space-y-6">
+          <aside ref={teamRef} id="team-section" className="space-y-6 scroll-mt-28">
             {session.role === "Admin" ? (
               <div className="rounded-[2rem] border border-white/10 bg-white/[0.07] p-6 backdrop-blur-xl">
                 <div className="flex flex-wrap items-center justify-between gap-3">
@@ -1129,4 +1165,10 @@ export default function Home() {
       </div>
     </main>
   );
+<<<<<<< HEAD
 }
+=======
+}
+
+ 
+>>>>>>> cf70798 (chore: commit workspace changes for SQLite and deployment fixes)

@@ -33,6 +33,16 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
+# sqlite data
+data/*.sqlite
+data/*.db
+data/*.sqlite-wal
+data/*.sqlite-shm
+data/*.sqlite-journal
+
+# local build log
+build-log.txt
+
 # vercel
 .vercel
 
