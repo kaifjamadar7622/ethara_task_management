@@ -1165,10 +1165,4 @@ export default function Home() {
       </div>
     </main>
   );
-<<<<<<< HEAD
 }
-=======
-}
-
- 
->>>>>>> cf70798 (chore: commit workspace changes for SQLite and deployment fixes)
